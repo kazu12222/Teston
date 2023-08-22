@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div>失敗</div>
+    <button onclick="redirectToIndex()">戻る</button>
+    <div class="flex-container">
+      <pre class="code-block"><code id="code-1">ここにコード1</code></pre>
+      <pre class="code-block"><code id="code-2">ここにコード2</code></pre>
+    </div>
+    <button onclick="A()">修正提案</button>
+    <button>置き換え</button>
+    <script>
+      const code1 = document.getElementById('code-1');
+      const code2 = document.getElementById('code-2');
+      function redirectToIndex() {
+        window.location.href = './index.html';
+      }
+      async function A() {
+        const A = await window.versions.loadFile('A');
+        console.log(A);
+        code1.textContent = A;
+        const B = await window.versions.gptFixCode('B');
+        // console.log(B);
+        code2.textContent = B;
+      }
+    </script>
+  </body>
+</html>
