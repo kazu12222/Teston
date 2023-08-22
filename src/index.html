@@ -2,23 +2,39 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Building correct App</title>
+    <title>Teston</title>
     <link rel="stylesheet" href="index.css" />
   </head>
 
   <body>
-    <h1>Collect building Item</h1>
+    <h1>Test Manager</h1>
     <p>Welcome to your Electron application.</p>
-    <button id="btn3">更新</button>
-    <button id="watchfilter">チェック済み</button>
-    <button id="unwatchfilter">未チェック</button>
-    <button id="filter500">500万円以下</button>
-    <button id="allshow">全表示</button>
-    <button id="upsort">昇順並び替え</button>
-    <button id="downsort">降順並び替え</button>
-    <button id="filter_area">土地のみ</button>
-    <button id="filter_build">建物のみ</button>
-    <div id="div"></div>
+    <button id="do-test">テスト実行</button>
+    <button id="new-test">テスト作成</button>
+    <button id="report-test">テストレポート表示</button>
+    <div class="flex-container">
+      <img
+        id="test-image-1"
+        class="clickable-image"
+        data-filename="example.spec.js"
+        src="../images/test-image-1.png"
+        alt="test1"
+      />
+      <img
+        id="test-image-2"
+        class="clickable-image"
+        data-filename="example2.spec.js"
+        src="../images/test-image-2.png"
+        alt="test2"
+      />
+      <img
+        id="test-image-3"
+        class="clickable-image"
+        data-filename="example.spec.js"
+        src="../images/test-image-3.png"
+        alt="test3"
+      />
+    </div>
   </body>
   <script src="./renderer.js"></script>
 </html>

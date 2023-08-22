@@ -8,9 +8,13 @@ contextBridge.exposeInMainWorld('versions', {
   electron: () => process.versions.electron,
   ping: () => ipcRenderer.invoke('ping'),
   setTitle: (title) => ipcRenderer.send('set-title', title), //タイトルを送る
-  puppeteer: () => ipcRenderer.invoke('automation'),
   search: (text) => ipcRenderer.send('search', text),
   test: () => ipcRenderer.invoke('test'),
+  newTest: () => ipcRenderer.invoke('test-new'),
+  reportTest: () => ipcRenderer.invoke('test-report'),
+  runTest: (fileName) => ipcRenderer.invoke('test-run', fileName),
+  loadFile: (fileName) => ipcRenderer.invoke('load-file', fileName),
+  gptFixCode: (fileName) => ipcRenderer.invoke('gpt-fix-code', fileName),
 });
 // 関数だけでなく、変数も公開できます
 

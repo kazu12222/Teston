@@ -1,67 +1,12 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
+const axios = require('axios');
 const { exec } = require('child_process');
-const { default: puppeteer } = require('puppeteer');
-const athome = require('../js/athome.js');
-const hatomark = require('../js/hatomark.js');
-const housego = require('../js/housego.js');
-const nifty = require('../js/nifty.js');
-const aisumu = require('../js/aisumu.js');
-const housestation = require('../js/housestation.js');
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-let webcontents;
-let previous_text = '';
-let active;
 if (require('electron-squirrel-startup')) {
   app.quit();
-}
-async function AutomationPuppeteer() {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox'],
-  });
-  const page = await browser.newPage();
-  const property_array = [];
-  await sleep(5000);
-  //配列にhatoarrayが入ったものが帰ってくる
-  const aisumu_array = await aisumu.aisumu(page);
-  console.log(aisumu_array.length);
-  // const athome_array = await athome.athome(page);
-  // console.log(athome_array.length);
-  const hatomark_array = await hatomark.hatomark(page);
-  console.log(hatomark_array.length);
-  const housego_array = await housego.housego(page);
-  console.log(housego_array.length);
-  const housestation_array = await housestation.housestation(page);
-  console.log(housestation_array.length);
-  const nifty_array = await nifty.nifty(page);
-  console.log(nifty_array.length);
-  for (let i = 0; i < hatomark_array.length; i++) {
-    property_array.push(hatomark_array[i]);
-    console.log('A' + i);
-  }
-  // for (let i = 0; i < athome_array.length; i++) {
-  //   property_array.push(athome_array[i]);
-  // }
-  for (let i = 0; i < housego_array.length; i++) {
-    property_array.push(housego_array[i]);
-    console.log('B' + i);
-  }
-  for (let i = 0; i < nifty_array.length; i++) {
-    property_array.push(nifty_array[i]);
-    console.log('C' + i);
-  }
-  for (let i = 0; i < aisumu_array.length; i++) {
-    console.log('D' + i);
-    property_array.push(aisumu_array[i]);
-  }
-  for (let i = 0; i < housestation_array.length; i++) {
-    console.log('E' + i);
-    property_array.push(housestation_array[i]);
-  }
-  console.log(property_array.length);
-  browser.close();
-  return property_array;
 }
 function Search(_event, text) {
   console.log(text);
@@ -76,15 +21,134 @@ function Search(_event, text) {
 }
 
 function test() {
-  exec('cd playwright && npx playwright test', (error, stdout, stderr) => {
+  exec('cd playwright && npx playwright test --ui', (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
     }
     console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
   });
 }
+function newTest() {
+  exec(`cd playwright && npx playwright codegen`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
+}
+function reportTest() {
+  exec(
+    'cd playwright && npx playwright show-report',
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    }
+  );
+}
+function runTest(_event, fileName) {
+  exec(
+    `cd playwright && npx playwright test ${fileName}`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    }
+  );
+}
+function loadFile(_event, fileName) {
+  const fileContent = fs.readFileSync(
+    path.join(__dirname, '../playwright/e2e/example.spec.js'),
+    'utf8'
+  );
+  console.log(fileContent);
+  console.log(fileName);
+  return fileContent;
+}
+
+function gptFixCode(_event, fileName) {
+  const fileContent = loadFile(_event, 'A');
+  let userMessage = fileContent;
+
+  if (userMessage === undefined) {
+    userMessage = '？？？';
+  }
+  const prompt = userMessage;
+  const requestOptions = {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + process.env.OPENAI_API_KEY,
+    },
+    payload: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: `Playwrightのコードに対して以下のエラーが出ました。
+          正しく修正してPlaywrightのコードのみを出力してください
+          
+          <条件>
+          ・Playwrightのコードのみを出力すること
+          ・Playwrightのコードを全文省略せずに出力すること
+          ・直したところにのみコメントアウトで横に修正内容を書く
+          ・修正したところ以外にはコメントアウトを追加しない
+          ・エラーが出ているところ以外は修正しないでください`,
+        },
+
+        {
+          role: 'user',
+          content: `
+        <Playwright>
+        // @ts-check
+        const { test, expect } = require('@playwright/test');
+        
+        test('has title', async ({ page }) => {
+          await page.goto('https://playwright.dev/');
+        
+          // Expect a title "to contain" a substring.
+          await expect(page).toHaveTitle(/Playwrigt/);
+        });
+        
+        test('get started link', async ({ page }) => {
+          await page.goto('https://playwright.dev/');
+        
+          // Click the get started link.
+          await page.getByRole('link', { name: 'Get started' }).click();
+        
+          // Expects page to have a heading with the name of Installation.
+          await expect(
+            page.getByRole('heading', { name: 'Installation' })
+          ).toBeVisible();
+        });
+        
+        
+        <エラー文>
+        Error: Timed out 5000ms waiting for expect(received).toHaveTitle(expected)
+        
+        Expected pattern: /Playwrigt/
+        Received string:  "Fast and reliable end-to-end testing for modern web apps | Playwright"
+        `,
+        },
+      ],
+    }),
+  };
+  console.log('before res');
+  return axios(
+    'https://api.openai.com/v1/chat/completions',
+    requestOptions
+  ).then((response) => {
+    const text = response.data.choices[0].message.content.trim();
+    return text;
+  });
+}
+
 const createWindow = () => {
   // Create the browser window.webContents
   mainWindow = new BrowserWindow({
@@ -118,9 +182,13 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   ipcMain.handle('ping', () => 'pong'); //setup送信,preloadのinvoke("ping")
-  ipcMain.handle('automation', AutomationPuppeteer);
   ipcMain.on('search', Search);
   ipcMain.handle('test', test);
+  ipcMain.handle('test-new', newTest);
+  ipcMain.handle('test-report', reportTest);
+  ipcMain.handle('test-run', runTest);
+  ipcMain.handle('load-file', loadFile);
+  ipcMain.handle('gpt-fix-code', gptFixCode);
   createWindow();
   app.on('activate', () => {
     //activateをリッスン(mac用)

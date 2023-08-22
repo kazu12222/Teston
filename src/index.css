@@ -1,23 +1,23 @@
-h2.unchecked{
+h2.unchecked {
   border-bottom: 1px solid #ddd;
   padding: 9px 10px 7px;
-  background: #F6F5E7;
+  background: #f6f5e7;
   text-decoration: none;
   color: #333;
-  font-size: 16px
+  font-size: 16px;
 }
-h2.checked{
+h2.checked {
   border-bottom: 1px solid #ddd;
   padding: 9px 10px 7px;
   background: #ffa500;
   text-decoration: none;
   color: #333;
-  font-size: 16px
+  font-size: 16px;
 }
-.pushbtn{
+.pushbtn {
   background: #ffa500;
 }
-table.row tr{
+table.row tr {
   background: #f1f9c5;
   font-weight: normal;
   color: #224619;
@@ -30,21 +30,21 @@ table.row tr{
 }
 
 .row th,
-.row td{
+.row td {
   padding: 5px;
   font-weight: normal;
   border-left: 1px solid #333;
   border-bottom: 1px solid #333;
 }
-.row th{
-  background-color: #CDEAFF;
+.row th {
+  background-color: #cdeaff;
 }
-.row td{
+.row td {
   background-color: #fbf9f9;
 }
 .copy-btn {
   padding: 3px 10px;
-  color: #FFF;
+  color: #fff;
   background: #1e90ff;
   border: none;
   border-radius: 10px;
@@ -52,4 +52,27 @@ table.row tr{
 
 .copy-btn:hover {
   background: #1872cc;
+}
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.flex-container img {
+  width: 30%; /* 3つの画像の合計サイズを90%にするため、各画像のサイズは30%です */
+}
+code {
+  padding: 0.2em 0.3em;
+  margin: 0 0.2em;
+  border-radius: 5px;
+  background: #f1f2f3;
+  color: #404040;
+  font-size: 0.9em;
+}
+pre {
+  padding: 1em;
+  margin: 0 0 1.5em;
+  border: solid 1px #eaedf2;
+  background: #f3f6fc;
+  color: #54687c;
 }

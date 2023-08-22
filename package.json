@@ -18,7 +18,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.4.0",
     "child_process": "^1.0.2",
+    "dotenv": "^16.3.1",
     "electron-db": "^0.15.7",
     "electron-json-storage": "^4.6.0",
     "electron-squirrel-startup": "^1.0.0",
