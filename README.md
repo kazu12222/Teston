@@ -10,4 +10,8 @@ $ npm install
 
 $ npm start
 
+## Setup .env
+
+OPENAI_API_KEY=
+
 # Teston

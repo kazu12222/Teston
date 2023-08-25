@@ -86,7 +86,7 @@ function gptFixCode(_event, fileName) {
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + process.env.OPENAI_API_KEY,
     },
-    payload: JSON.stringify({
+    data: JSON.stringify({
       model: 'gpt-3.5-turbo',
       messages: [
         {
@@ -139,14 +139,23 @@ function gptFixCode(_event, fileName) {
       ],
     }),
   };
+  console.log(process.env.OPENAI_API_KEY);
   console.log('before res');
-  return axios(
-    'https://api.openai.com/v1/chat/completions',
-    requestOptions
-  ).then((response) => {
-    const text = response.data.choices[0].message.content.trim();
-    return text;
-  });
+  return axios('https://api.openai.com/v1/chat/completions', requestOptions)
+    .then((response) => {
+      const text = response.data.choices[0].message.content.trim();
+      return text;
+    })
+    .catch((error) => {
+      console.error('Error:', error.message);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error('Data:', error.response.data);
+        console.error('Status:', error.response.status);
+        console.error('Headers:', error.response.headers);
+      }
+      throw error; // or handle it accordingly
+    });
 }
 
 const createWindow = () => {
