@@ -1,14 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
-const {
-  Search,
-  test,
-  newTest,
-  reportTest,
-  runTest,
-  loadFile,
-  gptFixCode,
-} = require('./js/index2.js');
+const { Search, test, newTest, reportTest, runTest } = require('./js/index.js');
+const { loadFile, gptFixCode } = require('./js/failed.js');
 
 if (require('electron-squirrel-startup')) {
   app.quit();
