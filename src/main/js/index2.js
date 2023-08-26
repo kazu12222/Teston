@@ -1,13 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 const axios = require('axios');
 const { exec } = require('child_process');
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-if (require('electron-squirrel-startup')) {
-  app.quit();
-}
+
 function Search(_event, text) {
   console.log(text);
   if (previous_text === text) {
@@ -30,17 +27,8 @@ function test() {
   });
 }
 function newTest() {
-  exec(`cd playwright && npx playwright codegen`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
-}
-function reportTest() {
   exec(
-    'cd playwright && npx playwright show-report',
+    `cd playwright && npx playwright codegen --viewport-size=800,800`,
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
@@ -49,6 +37,28 @@ function reportTest() {
       console.log(`stdout: ${stdout}`);
     }
   );
+  exec(
+    `cd playwright/e2e && code example3.spec.js`, //codeを貼り付けられる場所を作る
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    }
+  );
+  //コードの保存場所、スクリーンショット、タイトルを決めて保存するhtml作成
+  //ロジック
+  //buttonを押したらcodegen+html切り替え=>保存orキャンセルを用いてHomeに戻る
+}
+function reportTest() {
+  exec('cd playwright/e2e && code example.spec.js', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
 }
 function runTest(_event, fileName) {
   exec(
@@ -158,57 +168,12 @@ function gptFixCode(_event, fileName) {
     });
 }
 
-const createWindow = () => {
-  // Create the browser window.webContents
-  mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), //(実行中のスクリプトパス,レンダリング前にバージョン公開)非同期でスクリプトをロード
-    },
-  });
-  //(preloadのkey"set-title"からtitle文字列取得,handleSetTitleにipcMainEvent構造体とtitleを送る)
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
-  //////////////////////////////////////////////////////////////
-
-  webcontents = mainWindow.webContents;
-  webcontents.on('found-in-page', (event, result) => {
-    console.log(event);
-    //api作成,インスタンス化
-    if (result.activeMatchOrdinal) {
-      console.log(result);
-      active = result.activeMatchOrdinal;
-    } //アクティブなマッチの位置を覚えておく
-    if (result.finalUpdate) {
-      result_string = `${active}/${result.matches}`;
-    } // M個のマッチ中 N 番目がアクティブな時，N/M という文字列をつくる
-  });
-
-  ////////////////////////////////////////////////////////////////
-  //mainWindowにindex.html読み込み
-  mainWindow.webContents.setWindowOpenHandler(); //Developerツールを開いてサイトを開く
+module.exports = {
+  Search,
+  test,
+  newTest,
+  reportTest,
+  runTest,
+  loadFile,
+  gptFixCode,
 };
-
-app.whenReady().then(() => {
-  ipcMain.handle('ping', () => 'pong'); //setup送信,preloadのinvoke("ping")
-  ipcMain.on('search', Search);
-  ipcMain.handle('test', test);
-  ipcMain.handle('test-new', newTest);
-  ipcMain.handle('test-report', reportTest);
-  ipcMain.handle('test-run', runTest);
-  ipcMain.handle('load-file', loadFile);
-  ipcMain.handle('gpt-fix-code', gptFixCode);
-  createWindow();
-  app.on('activate', () => {
-    //activateをリッスン(mac用)
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on('window-all-closed', () => {
-  //全てのウィンドウが閉じられると終了(終了するまでアクティブ)
-  if (process.platform !== 'darwin') {
-    //darwin=macOS
-    app.quit();
-  }
-});

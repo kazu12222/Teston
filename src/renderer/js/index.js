@@ -58,6 +58,7 @@ doTest.addEventListener('click', async () => {
   window.versions.test();
 });
 newTest.addEventListener('click', async () => {
+  window.location.href = './newTest.html';
   window.versions.newTest();
 });
 reportTest.addEventListener('click', async () => {
