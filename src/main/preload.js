@@ -22,4 +22,5 @@ contextBridge.exposeInMainWorld('versions', {
   getScreenshotName: () => ipcRenderer.invoke('get-screenshot-name'),
   saveCode: (code, uuid) => ipcRenderer.invoke('save-code', code, uuid),
   deleteScreenshot: (uuid) => ipcRenderer.invoke('delete-screenshot', uuid),
+  editCode: (fileName) => ipcRenderer.invoke('edit-code', fileName),
 });

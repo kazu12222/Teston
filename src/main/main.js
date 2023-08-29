@@ -7,6 +7,7 @@ const {
   reportTest,
   runTest,
   getScreenshot,
+  editCode,
 } = require('./js/index.js');
 const { loadFile, gptFixCode } = require('./js/failed.js');
 const {
@@ -64,6 +65,7 @@ app.whenReady().then(() => {
   ipcMain.handle('get-screenshot-name', getScreenshotName);
   ipcMain.handle('save-code', saveCode);
   ipcMain.handle('delete-screenshot', deleteScreenshot);
+  ipcMain.handle('edit-code', editCode);
 
   createWindow();
   app.on('activate', () => {
