@@ -22,9 +22,9 @@ function test() {
     console.log(`stdout: ${stdout}`);
   });
 }
-function newTest() {
+function newTest(_event, link) {
   exec(
-    `cd playwright && npx playwright codegen --viewport-size=800,800`,
+    `cd playwright && npx playwright codegen ${link} --viewport-size=800,800`,
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
@@ -33,32 +33,34 @@ function newTest() {
       console.log(`stdout: ${stdout}`);
     }
   );
-  exec(
-    `cd playwright/e2e && code example3.spec.js`, //codeを貼り付けられる場所を作る
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
-  //コードの保存場所、スクリーンショット、タイトルを決めて保存するhtml作成
-  //ロジック
-  //buttonを押したらcodegen+html切り替え=>保存orキャンセルを用いてHomeに戻る
 }
 function reportTest() {
-  exec('cd playwright/e2e && code example.spec.js', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
+  exec(
+    'cd playwright && npx playwright show-report --output=report.html',
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
     }
-    console.log(`stdout: ${stdout}`);
-  });
+  );
 }
 function runTest(_event, fileName) {
   exec(
     `cd playwright && npx playwright test ${fileName}`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    }
+  );
+}
+function getScreenshot(_event, link, uuid) {
+  exec(
+    `cd playwright && npx playwright screenshot ${link} ../images/${uuid}.png`,
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
@@ -75,4 +77,5 @@ module.exports = {
   newTest,
   reportTest,
   runTest,
+  getScreenshot,
 };
