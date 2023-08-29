@@ -3,11 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>makeTest</title>
+    <link rel="stylesheet" href="../css/makeTest.css" />
   </head>
   <body>
-    <textarea id="code-input" rows="10" cols="50"></textarea>
-    <input type="text" id="title-input" />
+    <input
+      type="text"
+      id="title-input"
+      placeholder="タイトルを入力してください"
+    />
+    <textarea
+      id="code-input"
+      rows="10"
+      cols="50"
+      placeholder="テストコードを入力してください"
+    ></textarea>
     <button onclick="saveCode()">保存</button>
     <button onclick="redirectToIndex()">戻る</button>
   </body>

@@ -21,6 +21,17 @@ window.onload = function () {
 
   // テストデータを使用して新しい画像要素を動的に生成
   testData.forEach((test) => {
+    const productItem = document.createElement('div');
+    productItem.classList.add('product-item');
+
+    const productTitle = document.createElement('div');
+    productTitle.classList.add('product-title');
+    const titleParagraph = document.createElement('p');
+    titleParagraph.innerText = test.title;
+    productTitle.appendChild(titleParagraph);
+
+    const productImage = document.createElement('div');
+    productImage.classList.add('product-image');
     const imgElem = document.createElement('img');
     imgElem.id = test.id; // UUIDをIDとして設定
     imgElem.classList.add('clickable-image');
@@ -30,9 +41,14 @@ window.onload = function () {
       '.png'
     )}`;
     imgElem.alt = test.title;
+    productImage.appendChild(imgElem);
 
-    container.appendChild(imgElem);
+    productItem.appendChild(productTitle);
+    productItem.appendChild(productImage);
+
+    container.appendChild(productItem);
   });
+
   const imageElements = document.querySelectorAll('.clickable-image');
   const modal = document.getElementById('myModal');
   const closeBtn = document.querySelector('.close');
