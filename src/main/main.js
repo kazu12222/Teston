@@ -9,12 +9,13 @@ const {
   getScreenshot,
   editCode,
 } = require('./js/index.js');
-const { loadFile, gptFixCode } = require('./js/failed.js');
+const { loadFile, gptFixCode } = require('./js/result.js');
 const {
   storeScreenshotName,
   getScreenshotName,
   saveCode,
   deleteScreenshot,
+  deleteCode,
 } = require('./js/makeTest.js');
 
 if (require('electron-squirrel-startup')) {
@@ -65,6 +66,7 @@ app.whenReady().then(() => {
   ipcMain.handle('get-screenshot-name', getScreenshotName);
   ipcMain.handle('save-code', saveCode);
   ipcMain.handle('delete-screenshot', deleteScreenshot);
+  ipcMain.handle('delete-code', deleteCode);
   ipcMain.handle('edit-code', editCode);
 
   createWindow();

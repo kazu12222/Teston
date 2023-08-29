@@ -21,6 +21,17 @@ window.onload = function () {
 
   // テストデータを使用して新しい画像要素を動的に生成
   testData.forEach((test) => {
+    const productItem = document.createElement('div');
+    productItem.classList.add('product-item');
+
+    const productTitle = document.createElement('div');
+    productTitle.classList.add('product-title');
+    const titleParagraph = document.createElement('p');
+    titleParagraph.innerText = test.title;
+    productTitle.appendChild(titleParagraph);
+
+    const productImage = document.createElement('div');
+    productImage.classList.add('product-image');
     const imgElem = document.createElement('img');
     imgElem.id = test.id; // UUIDをIDとして設定
     imgElem.classList.add('clickable-image');
@@ -30,9 +41,14 @@ window.onload = function () {
       '.png'
     )}`;
     imgElem.alt = test.title;
+    productImage.appendChild(imgElem);
 
-    container.appendChild(imgElem);
+    productItem.appendChild(productTitle);
+    productItem.appendChild(productImage);
+
+    container.appendChild(productItem);
   });
+
   const imageElements = document.querySelectorAll('.clickable-image');
   const modal = document.getElementById('myModal');
   const closeBtn = document.querySelector('.close');
@@ -119,54 +135,17 @@ runButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
   window.versions.runTest(fileName);
   await sleep(1000);
-  if (fileName === 'example2.spec.js') {
-    window.location.href = './failed.html';
-  } else {
-    window.location.href = './success.html';
-  }
+  window.location.href = `./result.html?fileName=${fileName}`;
 });
 deleteButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
   const uuid = fileName.replace('.spec.js', '');
-  console.log(uuid);
   let currentTestData = JSON.parse(localStorage.getItem('testData') || '{}');
-  console.log(currentTestData);
   currentTestData[uuid] = undefined;
-  console.log(currentTestData);
   localStorage.setItem('testData', JSON.stringify(currentTestData));
   window.versions.deleteScreenshot(uuid);
+  window.versions.deleteCode(fileName);
   window.location.href = './index.html';
 });
 
 func(); //ping,pang
-
-// 通知の権限を要求する関数
-function requestNotificationPermission() {
-  Notification.requestPermission().then((permission) => {
-    console.log(permission);
-    if (permission === 'granted') {
-      showNotification();
-    } else {
-      console.error('Notification permission denied');
-    }
-  });
-}
-
-// 通知を表示する関数
-function showNotification() {
-  const NOTIFICATION_TITLE = 'テストが終わりました';
-  const NOTIFICATION_BODY = '結果を確認しましょう';
-  const CLICK_MESSAGE = 'Notification was clicked!';
-
-  const notification = new Notification(NOTIFICATION_TITLE, {
-    body: NOTIFICATION_BODY,
-  });
-  notification.onclick = () => {
-    document.getElementById('output').innerText = CLICK_MESSAGE;
-  };
-}
-
-// ユーザーがボタンをクリックしたときに通知の権限を要求する
-document
-  .getElementById('notify-button')
-  .addEventListener('click', requestNotificationPermission);

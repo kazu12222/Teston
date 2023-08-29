@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Result</title>
+    <link rel="stylesheet" href="../css/result.css" />
+  </head>
+  <body>
+    <div class="button-container">
+      <h2>テスト結果</h2>
+      <button id="report-test">テストレポート表示</button>
+      <button id="edit-code">コード編集</button>
+      <button onclick="A()">修正提案</button>
+      <button>置き換え</button>
+      <button onclick="redirectToIndex()">戻る</button>
+    </div>
+    <div class="code-container">
+      <pre class="code-block"><code id="code-1">現在のコード</code></pre>
+      <pre class="code-block"><code id="code-2">コードの修正案</code></pre>
+    </div>
+    <script src="../js/result.js"></script>
+  </body>
+</html>

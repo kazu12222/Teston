@@ -32,10 +32,20 @@ function deleteScreenshot(_event, uuid) {
     console.log('File has been deleted');
   });
 }
+function deleteCode(_event, fileName) {
+  fs.unlink(`playwright/e2e/${fileName}`, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log('File has been deleted');
+  });
+}
 
 module.exports = {
   storeScreenshotName,
   getScreenshotName,
   saveCode,
   deleteScreenshot,
+  deleteCode,
 };
