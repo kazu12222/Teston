@@ -90,6 +90,7 @@ const reportTest = document.getElementById('report-test');
 const linkInput = document.getElementById('link-input');
 const editButton = document.getElementById('edit-code');
 const runButton = document.getElementById('run-test');
+const deleteButton = document.getElementById('delete-test');
 const modal = document.getElementById('myModal');
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -128,6 +129,18 @@ runButton.addEventListener('click', async () => {
   } else {
     window.location.href = './success.html';
   }
+});
+deleteButton.addEventListener('click', async () => {
+  const fileName = modal.dataset.filename;
+  const uuid = fileName.replace('.spec.js', '');
+  console.log(uuid);
+  let currentTestData = JSON.parse(localStorage.getItem('testData') || '{}');
+  console.log(currentTestData);
+  currentTestData[uuid] = undefined;
+  console.log(currentTestData);
+  localStorage.setItem('testData', JSON.stringify(currentTestData));
+  window.versions.deleteScreenshot(uuid);
+  window.location.href = './index.html';
 });
 
 func(); //ping,pang

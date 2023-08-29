@@ -52,10 +52,13 @@ function runTest(_event, fileName) {
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
-        console.error(`stderr: ${stderr}`); // 追加
-        return;
+        console.error(`stderr: ${stderr}`);
+      } else {
+        console.log(`stdout: ${stdout}`);
       }
-      console.log(`stdout: ${stdout}`);
+      console.log('Test execution completed!'); // このメッセージでテストが完了したことがわかります
+      //desktopに通知を送る
+      //report有効化=>allure-report
     }
   );
 }
