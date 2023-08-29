@@ -15,19 +15,6 @@ function Search(_event, text) {
     webcontents.findInPage(text); //api使用
   }
 }
-function clearDirectory(directoryPath) {
-  if (fs.existsSync(directoryPath)) {
-    fs.readdirSync(directoryPath).forEach((file) => {
-      const curPath = path.join(directoryPath, file);
-      if (fs.lstatSync(curPath).isDirectory()) {
-        clearDirectory(curPath);
-      } else {
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(directoryPath);
-  }
-}
 
 function test() {
   exec('cd playwright && npx playwright test --ui', (error, stdout, stderr) => {
@@ -63,14 +50,6 @@ function reportTest() {
   );
 }
 function runTest(_event, fileName) {
-  clearDirectory('playwright-report');
-  clearDirectory('playwright-results');
-
-  // ディレクトリを再作成（中身が空の状態）
-  fs.mkdirSync('playwright-report');
-  fs.mkdirSync('playwright-results');
-  console.log('Directory has been recreated!');
-
   return new Promise((resolve, reject) => {
     console.log('Starting to run commands...');
     exec(
