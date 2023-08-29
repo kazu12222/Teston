@@ -1,3 +1,4 @@
+const { Notification } = require('electron');
 require('dotenv').config();
 const { exec } = require('child_process');
 
@@ -52,10 +53,20 @@ function runTest(_event, fileName) {
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
-        console.error(`stderr: ${stderr}`); // 追加
-        return;
+        console.error(`stderr: ${stderr}`);
+      } else {
+        console.log(`stdout: ${stdout}`);
       }
-      console.log(`stdout: ${stdout}`);
+      console.log('Test execution completed!'); // このメッセージでテストが完了したことがわかります
+
+      const NOTIFICATION_TITLE = 'テストが完了しました';
+      const NOTIFICATION_BODY = 'テスト結果を確認しましょう';
+
+      new Notification({
+        title: NOTIFICATION_TITLE,
+        body: NOTIFICATION_BODY,
+      }).show();
+      //report有効化=>allure-report
     }
   );
 }

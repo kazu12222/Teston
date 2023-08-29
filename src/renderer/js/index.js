@@ -90,13 +90,9 @@ const reportTest = document.getElementById('report-test');
 const linkInput = document.getElementById('link-input');
 const editButton = document.getElementById('edit-code');
 const runButton = document.getElementById('run-test');
+const deleteButton = document.getElementById('delete-test');
 const modal = document.getElementById('myModal');
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-
-function execCommand(fileName) {
-  console.log(fileName);
-  window.versions.runTest(fileName);
-}
 
 doTest.addEventListener('click', async () => {
   window.versions.test();
@@ -121,7 +117,7 @@ editButton.addEventListener('click', async () => {
 });
 runButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
-  execCommand(fileName);
+  window.versions.runTest(fileName);
   await sleep(1000);
   if (fileName === 'example2.spec.js') {
     window.location.href = './failed.html';
@@ -129,5 +125,48 @@ runButton.addEventListener('click', async () => {
     window.location.href = './success.html';
   }
 });
+deleteButton.addEventListener('click', async () => {
+  const fileName = modal.dataset.filename;
+  const uuid = fileName.replace('.spec.js', '');
+  console.log(uuid);
+  let currentTestData = JSON.parse(localStorage.getItem('testData') || '{}');
+  console.log(currentTestData);
+  currentTestData[uuid] = undefined;
+  console.log(currentTestData);
+  localStorage.setItem('testData', JSON.stringify(currentTestData));
+  window.versions.deleteScreenshot(uuid);
+  window.location.href = './index.html';
+});
 
 func(); //ping,pang
+
+// 通知の権限を要求する関数
+function requestNotificationPermission() {
+  Notification.requestPermission().then((permission) => {
+    console.log(permission);
+    if (permission === 'granted') {
+      showNotification();
+    } else {
+      console.error('Notification permission denied');
+    }
+  });
+}
+
+// 通知を表示する関数
+function showNotification() {
+  const NOTIFICATION_TITLE = 'テストが終わりました';
+  const NOTIFICATION_BODY = '結果を確認しましょう';
+  const CLICK_MESSAGE = 'Notification was clicked!';
+
+  const notification = new Notification(NOTIFICATION_TITLE, {
+    body: NOTIFICATION_BODY,
+  });
+  notification.onclick = () => {
+    document.getElementById('output').innerText = CLICK_MESSAGE;
+  };
+}
+
+// ユーザーがボタンをクリックしたときに通知の権限を要求する
+document
+  .getElementById('notify-button')
+  .addEventListener('click', requestNotificationPermission);

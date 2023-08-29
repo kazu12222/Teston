@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <title>Teston</title>
     <link rel="stylesheet" href="../css/index.css" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' 'unsafe-inline';"
+    />
   </head>
 
   <body>
@@ -17,8 +21,12 @@
         <h2>操作を選択してください</h2>
         <button id="edit-code">コード編集</button>
         <button id="run-test">実行</button>
+        <button id="delete-test">削除</button>
       </div>
     </div>
+
+    <button id="notify-button">Show Notification</button>
+    <div id="output">A</div>
 
     <button id="do-test">テスト実行</button>
     <input type="text" id="link-input" placeholder="URLを入力してください" />
