@@ -119,11 +119,7 @@ runButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
   window.versions.runTest(fileName);
   await sleep(1000);
-  if (fileName === 'example2.spec.js') {
-    window.location.href = './failed.html';
-  } else {
-    window.location.href = './success.html';
-  }
+  window.location.href = `./result.html?fileName=${fileName}`;
 });
 deleteButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
@@ -139,34 +135,3 @@ deleteButton.addEventListener('click', async () => {
 });
 
 func(); //ping,pang
-
-// 通知の権限を要求する関数
-function requestNotificationPermission() {
-  Notification.requestPermission().then((permission) => {
-    console.log(permission);
-    if (permission === 'granted') {
-      showNotification();
-    } else {
-      console.error('Notification permission denied');
-    }
-  });
-}
-
-// 通知を表示する関数
-function showNotification() {
-  const NOTIFICATION_TITLE = 'テストが終わりました';
-  const NOTIFICATION_BODY = '結果を確認しましょう';
-  const CLICK_MESSAGE = 'Notification was clicked!';
-
-  const notification = new Notification(NOTIFICATION_TITLE, {
-    body: NOTIFICATION_BODY,
-  });
-  notification.onclick = () => {
-    document.getElementById('output').innerText = CLICK_MESSAGE;
-  };
-}
-
-// ユーザーがボタンをクリックしたときに通知の権限を要求する
-document
-  .getElementById('notify-button')
-  .addEventListener('click', requestNotificationPermission);

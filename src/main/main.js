@@ -9,7 +9,7 @@ const {
   getScreenshot,
   editCode,
 } = require('./js/index.js');
-const { loadFile, gptFixCode } = require('./js/failed.js');
+const { loadFile, gptFixCode } = require('./js/result.js');
 const {
   storeScreenshotName,
   getScreenshotName,

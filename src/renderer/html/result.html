@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="../css/index.css" />
   </head>
   <body>
-    <div>失敗</div>
+    <div>テスト結果</div>
+    <button id="report-test">テストレポート表示</button>
+    <button id="edit-code">コード編集</button>
     <button onclick="redirectToIndex()">戻る</button>
     <div class="flex-container">
       <pre class="code-block"><code id="code-1">ここにコード1</code></pre>
@@ -15,20 +17,6 @@
     </div>
     <button onclick="A()">修正提案</button>
     <button>置き換え</button>
-    <script>
-      const code1 = document.getElementById('code-1');
-      const code2 = document.getElementById('code-2');
-      function redirectToIndex() {
-        window.location.href = './index.html';
-      }
-      async function A() {
-        const A = await window.versions.loadFile('A');
-        console.log(A);
-        code1.textContent = A;
-        const B = await window.versions.gptFixCode('B');
-        // console.log(B);
-        code2.textContent = B;
-      }
-    </script>
+    <script src="../js/result.js"></script>
   </body>
 </html>
