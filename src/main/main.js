@@ -1,7 +1,20 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
-const { Search, test, newTest, reportTest, runTest } = require('./js/index.js');
+const {
+  Search,
+  test,
+  newTest,
+  reportTest,
+  runTest,
+  getScreenshot,
+} = require('./js/index.js');
 const { loadFile, gptFixCode } = require('./js/failed.js');
+const {
+  storeScreenshotName,
+  getScreenshotName,
+  saveCode,
+  deleteScreenshot,
+} = require('./js/makeTest.js');
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -46,6 +59,12 @@ app.whenReady().then(() => {
   ipcMain.handle('test-run', runTest);
   ipcMain.handle('load-file', loadFile);
   ipcMain.handle('gpt-fix-code', gptFixCode);
+  ipcMain.handle('get-screenshot', getScreenshot);
+  ipcMain.handle('store-screenshot-name', storeScreenshotName);
+  ipcMain.handle('get-screenshot-name', getScreenshotName);
+  ipcMain.handle('save-code', saveCode);
+  ipcMain.handle('delete-screenshot', deleteScreenshot);
+
   createWindow();
   app.on('activate', () => {
     //activateをリッスン(mac用)
