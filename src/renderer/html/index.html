@@ -9,6 +9,17 @@
   <body>
     <h1>Test Manager</h1>
     <p>Welcome to your Electron application.</p>
+    <!-- モーダルの背景 -->
+    <div id="myModal" class="modal">
+      <!-- モーダルのコンテンツ -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>操作を選択してください</h2>
+        <button id="edit-code">コード編集</button>
+        <button id="run-test">実行</button>
+      </div>
+    </div>
+
     <button id="do-test">テスト実行</button>
     <input type="text" id="link-input" placeholder="URLを入力してください" />
     <button id="new-test">テスト作成</button>

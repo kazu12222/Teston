@@ -34,18 +34,27 @@ window.onload = function () {
     container.appendChild(imgElem);
   });
   const imageElements = document.querySelectorAll('.clickable-image');
+  const modal = document.getElementById('myModal');
+  const closeBtn = document.querySelector('.close');
+
   imageElements.forEach((image) => {
-    image.addEventListener('click', async function () {
-      const fileName = image.dataset.filename;
-      execCommand(fileName);
-      await sleep(1000);
-      if (fileName === 'example2.spec.js') {
-        window.location.href = './failed.html';
-      } else {
-        window.location.href = './success.html';
-      }
+    image.addEventListener('click', function () {
+      modal.setAttribute('data-filename', image.dataset.filename);
+      modal.style.display = 'block';
     });
   });
+
+  // クローズボタンがクリックされたときのイベントリスナー
+  closeBtn.onclick = function () {
+    modal.style.display = 'none';
+  };
+
+  // モーダルの外側をクリックしたときにモーダルを閉じる
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  };
 };
 
 const func = async () => {
@@ -79,6 +88,9 @@ const doTest = document.getElementById('do-test');
 const newTest = document.getElementById('new-test');
 const reportTest = document.getElementById('report-test');
 const linkInput = document.getElementById('link-input');
+const editButton = document.getElementById('edit-code');
+const runButton = document.getElementById('run-test');
+const modal = document.getElementById('myModal');
 const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
 
 function execCommand(fileName) {
@@ -102,4 +114,19 @@ newTest.addEventListener('click', async () => {
 reportTest.addEventListener('click', async () => {
   window.versions.reportTest();
 });
+editButton.addEventListener('click', async () => {
+  const fileName = modal.dataset.filename;
+  window.versions.editCode(fileName);
+});
+runButton.addEventListener('click', async () => {
+  const fileName = modal.dataset.filename;
+  execCommand(fileName);
+  await sleep(1000);
+  if (fileName === 'example2.spec.js') {
+    window.location.href = './failed.html';
+  } else {
+    window.location.href = './success.html';
+  }
+});
+
 func(); //ping,pang

@@ -1,4 +1,4 @@
-# building-app
+# Teston
 
 > My brilliant Electron project
 
@@ -13,5 +13,3 @@ $ npm start
 ## Setup .env
 
 OPENAI_API_KEY=
-
-# Teston

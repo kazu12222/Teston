@@ -70,6 +70,15 @@ function getScreenshot(_event, link, uuid) {
     }
   );
 }
+function editCode(_event, fileName) {
+  exec(`cd playwright/e2e && code ${fileName}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
+}
 
 module.exports = {
   Search,
@@ -78,4 +87,5 @@ module.exports = {
   reportTest,
   runTest,
   getScreenshot,
+  editCode,
 };
