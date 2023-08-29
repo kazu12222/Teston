@@ -1,3 +1,15 @@
+window.addEventListener('DOMContentLoaded', (event) => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const testFinish = urlParams.get('testFinish');
+
+  if (testFinish === 'true') {
+    const reportTest = document.getElementById('report-test');
+    if (reportTest) {
+      reportTest.disabled = false; // ボタンを有効にする
+    }
+  }
+});
+
 const code1 = document.getElementById('code-1');
 const code2 = document.getElementById('code-2');
 const editButton = document.getElementById('edit-code');
@@ -21,6 +33,6 @@ editButton.addEventListener('click', async () => {
   window.versions.editCode(fileName);
 });
 reportTest.addEventListener('click', async () => {
-  window.location.href = '../../../playwright/playwright-report/index.html';
-  //window.versions.reportTest();
+  //   window.location.href = '../../../playwright/playwright-report/index.html';
+  window.versions.reportTest();
 });

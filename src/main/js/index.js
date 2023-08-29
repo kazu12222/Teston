@@ -1,5 +1,7 @@
 const { Notification } = require('electron');
 require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
 const { exec } = require('child_process');
 
 function Search(_event, text) {
@@ -37,7 +39,7 @@ function newTest(_event, link) {
 }
 function reportTest() {
   exec(
-    'cd playwright && npx playwright show-report',
+    'cd playwright && npx allure open ./allure-report',
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
@@ -48,27 +50,43 @@ function reportTest() {
   );
 }
 function runTest(_event, fileName) {
-  exec(
-    `cd playwright && npx playwright test ${fileName} --reporter=html`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        console.error(`stderr: ${stderr}`);
-      } else {
+  return new Promise((resolve, reject) => {
+    console.log('Starting to run commands...');
+    exec(
+      `cd playwright && npx playwright test ${fileName} --reporter=line,allure-playwright`,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`exec error: ${error}`);
+          console.error(`stderr: ${stderr}`);
+        }
         console.log(`stdout: ${stdout}`);
+        console.log('First test execution completed!');
+
+        // First command has finished, now run the second command.
+        exec(
+          `cd playwright && npx allure generate ./allure-results --clean`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error(`exec error: ${error}`);
+              console.error(`stderr: ${stderr}`);
+            }
+            console.log(`stdout: ${stdout}`);
+            console.log('Allure report generation completed!');
+
+            const NOTIFICATION_TITLE = 'テストが完了しました';
+            const NOTIFICATION_BODY = 'レポート結果を確認しましょう';
+
+            new Notification({
+              title: NOTIFICATION_TITLE,
+              body: NOTIFICATION_BODY,
+            }).show();
+
+            resolve(); // Both commands finished successfully, so we resolve the promise
+          }
+        );
       }
-      console.log('Test execution completed!'); // このメッセージでテストが完了したことがわかります
-
-      const NOTIFICATION_TITLE = 'テストが完了しました';
-      const NOTIFICATION_BODY = 'テスト結果を確認しましょう';
-
-      new Notification({
-        title: NOTIFICATION_TITLE,
-        body: NOTIFICATION_BODY,
-      }).show();
-      //report有効化=>allure-report
-    }
-  );
+    );
+  });
 }
 
 function getScreenshot(_event, link, uuid) {

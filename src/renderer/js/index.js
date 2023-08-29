@@ -124,8 +124,8 @@ newTest.addEventListener('click', async () => {
   // URLのスクショを撮りいってTmpに置く
 });
 reportTest.addEventListener('click', async () => {
-  window.location.href = '../../../playwright/playwright-report/index.html';
-  //window.versions.reportTest();
+  // window.location.href = '../../../playwright/playwright-report/index.html';
+  window.versions.reportTest();
 });
 editButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
@@ -133,7 +133,15 @@ editButton.addEventListener('click', async () => {
 });
 runButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
-  window.versions.runTest(fileName);
+  window.versions
+    .runTest(fileName)
+    .then(() => {
+      console.log('All commands in runTest have completed!');
+      window.location.href = `./result.html?fileName=${fileName}&testFinish=true`;
+    })
+    .catch((error) => {
+      console.error('An error occurred in runTest:', error);
+    });
   await sleep(1000);
   window.location.href = `./result.html?fileName=${fileName}`;
 });
