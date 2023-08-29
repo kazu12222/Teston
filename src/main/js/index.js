@@ -36,7 +36,7 @@ function newTest(_event, link) {
 }
 function reportTest() {
   exec(
-    'cd playwright && npx playwright show-report --output=report.html',
+    'cd playwright && npx playwright show-report',
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
@@ -48,16 +48,18 @@ function reportTest() {
 }
 function runTest(_event, fileName) {
   exec(
-    `cd playwright && npx playwright test ${fileName}`,
+    `cd playwright && npx playwright test ${fileName} --reporter=html`,
     (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
+        console.error(`stderr: ${stderr}`); // 追加
         return;
       }
       console.log(`stdout: ${stdout}`);
     }
   );
 }
+
 function getScreenshot(_event, link, uuid) {
   exec(
     `cd playwright && npx playwright screenshot ${link} ../images/${uuid}.png`,

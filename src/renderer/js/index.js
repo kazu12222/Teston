@@ -112,7 +112,8 @@ newTest.addEventListener('click', async () => {
   // URLのスクショを撮りいってTmpに置く
 });
 reportTest.addEventListener('click', async () => {
-  window.versions.reportTest();
+  window.location.href = '../../../playwright/playwright-report/index.html';
+  //window.versions.reportTest();
 });
 editButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
