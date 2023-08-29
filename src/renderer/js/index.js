@@ -124,13 +124,11 @@ runButton.addEventListener('click', async () => {
 deleteButton.addEventListener('click', async () => {
   const fileName = modal.dataset.filename;
   const uuid = fileName.replace('.spec.js', '');
-  console.log(uuid);
   let currentTestData = JSON.parse(localStorage.getItem('testData') || '{}');
-  console.log(currentTestData);
   currentTestData[uuid] = undefined;
-  console.log(currentTestData);
   localStorage.setItem('testData', JSON.stringify(currentTestData));
   window.versions.deleteScreenshot(uuid);
+  window.versions.deleteCode(fileName);
   window.location.href = './index.html';
 });
 
