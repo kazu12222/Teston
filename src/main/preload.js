@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('versions', {
   ping: () => ipcRenderer.invoke('ping'),
   setTitle: (title) => ipcRenderer.send('set-title', title), //タイトルを送る
   search: (text) => ipcRenderer.send('search', text),
+  killTest: () => ipcRenderer.invoke('kill-test'),
   test: () => ipcRenderer.invoke('test'),
   newTest: (link) => ipcRenderer.invoke('test-new', link),
   reportTest: () => ipcRenderer.invoke('test-report'),

@@ -8,6 +8,7 @@ const {
   runTest,
   getScreenshot,
   editCode,
+  killTest,
 } = require('./js/index.js');
 const { loadFile, gptFixCode } = require('./js/result.js');
 const {
@@ -68,6 +69,7 @@ app.whenReady().then(() => {
   ipcMain.handle('delete-screenshot', deleteScreenshot);
   ipcMain.handle('delete-code', deleteCode);
   ipcMain.handle('edit-code', editCode);
+  ipcMain.handle('kill-test', killTest);
 
   createWindow();
   app.on('activate', () => {

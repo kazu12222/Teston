@@ -2,7 +2,9 @@ const { Notification } = require('electron');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
+
+let child;
 
 function Search(_event, text) {
   console.log(text);
@@ -16,17 +18,34 @@ function Search(_event, text) {
   }
 }
 
-function test() {
-  exec('cd playwright && npx playwright test --ui', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
+function killTest() {
+  if (child) {
+    try {
+      console.log(child.pid);
+      process.kill(child.pid); // childプロセスのpidを使用してプロセスをkill
+      console.log('プロセスを終了しました');
+    } catch (error) {
+      console.error('プロセスの終了に失敗しました:', error);
     }
-    console.log(`stdout: ${stdout}`);
-  });
+    child = null;
+  } else {
+    console.log('実行中のプロセスはありません');
+  }
+}
+function test() {
+  child = exec(
+    'cd playwright && npx playwright test --ui',
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    }
+  );
 }
 function newTest(_event, link) {
-  exec(
+  child = exec(
     `cd playwright && npx playwright codegen ${link} --viewport-size=800,800`,
     (error, stdout, stderr) => {
       if (error) {
@@ -36,6 +55,7 @@ function newTest(_event, link) {
       console.log(`stdout: ${stdout}`);
     }
   );
+  console.log(child.pid);
 }
 function reportTest() {
   exec(
@@ -119,4 +139,5 @@ module.exports = {
   runTest,
   getScreenshot,
   editCode,
+  killTest,
 };
