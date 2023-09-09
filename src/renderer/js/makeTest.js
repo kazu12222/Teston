@@ -27,6 +27,7 @@ async function saveCode() {
 
   // 更新したテストデータをLocalStorageに再度保存
   localStorage.setItem('testData', JSON.stringify(currentTestData));
+  window.versions.killTest();
   window.location.href = './index.html';
 }
 
@@ -34,6 +35,7 @@ async function redirectToIndex() {
   const uuid = await getUUID();
   // 画像削除
   window.versions.deleteScreenshot(uuid);
+  window.versions.killTest();
   // href戻る
   window.location.href = './index.html';
 }
