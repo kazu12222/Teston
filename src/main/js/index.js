@@ -2,7 +2,7 @@ const { Notification } = require('electron');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
-const { exec, spawn } = require('child_process');
+const { spawn } = require('child_process');
 
 let child;
 
@@ -10,19 +10,16 @@ function Search(_event, text) {
   console.log(text);
   if (previous_text === text) {
     webcontents.findInPage(text, { findNext: true });
-    // 前回の検索時とテキストが変わっていないので次のマッチを検索
   } else {
-    // 検索開始
     previous_text = text;
-    webcontents.findInPage(text); //api使用
+    webcontents.findInPage(text);
   }
 }
 
 function killTest() {
   if (child) {
     try {
-      console.log(child.pid);
-      process.kill(child.pid); // childプロセスのpidを使用してプロセスをkill
+      process.kill(child.pid);
       console.log('プロセスを終了しました');
     } catch (error) {
       console.error('プロセスの終了に失敗しました:', error);
@@ -32,103 +29,120 @@ function killTest() {
     console.log('実行中のプロセスはありません');
   }
 }
-function test() {
-  child = exec(
-    'cd playwright && npx playwright test --ui',
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
-}
-function newTest(_event, link) {
-  child = exec(
-    `cd playwright && npx playwright codegen ${link} --viewport-size=800,800`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
-  console.log(child.pid);
-}
-function reportTest() {
-  exec(
-    'cd playwright && npx allure open ./allure-report',
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
-}
-function runTest(_event, fileName) {
+
+function executeCommand(command, args, options = {}) {
   return new Promise((resolve, reject) => {
-    console.log('Starting to run commands...');
-    exec(
-      `cd playwright && npx playwright test ${fileName} --reporter=line,allure-playwright`,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`);
-          console.error(`stderr: ${stderr}`);
-        }
-        console.log(`stdout: ${stdout}`);
-        console.log('First test execution completed!');
+    const proc = spawn(command, args, options);
 
-        // First command has finished, now run the second command.
-        exec(
-          `cd playwright && npx allure generate ./allure-results --clean`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error(`exec error: ${error}`);
-              console.error(`stderr: ${stderr}`);
-            }
-            console.log(`stdout: ${stdout}`);
-            console.log('Allure report generation completed!');
+    let stdoutData = '';
+    let stderrData = '';
 
-            const NOTIFICATION_TITLE = 'テストが完了しました';
-            const NOTIFICATION_BODY = 'レポート結果を確認しましょう';
+    proc.stdout.on('data', (data) => {
+      stdoutData += data.toString();
+    });
 
-            new Notification({
-              title: NOTIFICATION_TITLE,
-              body: NOTIFICATION_BODY,
-            }).show();
+    proc.stderr.on('data', (data) => {
+      stderrData += data.toString();
+    });
 
-            resolve(); // Both commands finished successfully, so we resolve the promise
-          }
+    proc.on('close', (code) => {
+      if (code !== 0) {
+        reject(
+          new Error(`Command failed with exit code ${code}: ${stderrData}`)
         );
+      } else {
+        resolve(stdoutData);
       }
-    );
+    });
+
+    child = proc; // child変数にprocを代入
   });
+}
+
+function test() {
+  executeCommand('npx', ['playwright', 'test', '--ui'], { cwd: 'playwright' })
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+    })
+    .catch((error) => {
+      console.error(`exec error: ${error.message}`);
+    });
+}
+
+function newTest(_event, link) {
+  executeCommand(
+    'npx',
+    ['playwright', 'codegen', link, '--viewport-size=800,800'],
+    { cwd: 'playwright' }
+  )
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+    })
+    .catch((error) => {
+      console.error(`exec error: ${error.message}`);
+    });
+}
+
+function reportTest() {
+  executeCommand('npx', ['allure', 'open', './allure-report'], {
+    cwd: 'playwright',
+  })
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+    })
+    .catch((error) => {
+      console.error(`exec error: ${error.message}`);
+    });
+}
+
+function runTest(_event, fileName) {
+  executeCommand(
+    'npx',
+    ['playwright', 'test', fileName, '--reporter=line,allure-playwright'],
+    { cwd: 'playwright' }
+  )
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+      return executeCommand(
+        'npx',
+        ['allure', 'generate', './allure-results', '--clean'],
+        { cwd: 'playwright' }
+      );
+    })
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+      new Notification({
+        title: 'テストが完了しました',
+        body: 'レポート結果を確認しましょう',
+      }).show();
+    })
+    .catch((error) => {
+      console.error(`exec error: ${error.message}`);
+    });
 }
 
 function getScreenshot(_event, link, uuid) {
-  exec(
-    `cd playwright && npx playwright screenshot ${link} ../images/${uuid}.png`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
+  executeCommand(
+    'npx',
+    ['playwright', 'screenshot', link, `../images/${uuid}.png`],
+    { cwd: 'playwright' }
+  )
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+    })
+    .catch((error) => {
+      console.error(`exec error: ${error.message}`);
+    });
 }
+
 function editCode(_event, fileName) {
-  exec(`cd playwright/e2e && code ${fileName}`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
+  executeCommand('code', [fileName], { cwd: 'playwright/e2e' })
+    .then((output) => {
+      console.log(`stdout: ${output}`);
+    })
+    .catch((error) => {
+      console.error(`exec error: ${error.message}`);
+    });
 }
 
 module.exports = {
